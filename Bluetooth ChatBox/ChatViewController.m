@@ -10,6 +10,7 @@
 @interface ChatViewController ()
 
 -(void)receiveMessage:(NSNotification*)notification;
+-(void)writeUserInfo:(NSNotification*)notification;
 
 @end
 
@@ -19,6 +20,7 @@
     [super viewDidLoad];
     _message.delegate = self;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveMessage:) name:@"ReceiveMessage" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(writeUserInfo:) name:@"WriteUserInfo" object:nil];
     // Do any additional setup after loading the view.
 }
 
@@ -70,6 +72,13 @@
     [date setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
     NSString *dateString = [date stringFromDate:[NSDate date]];
     return dateString;
+}
+
+-(void)writeUserInfo:(NSNotification *)notification{
+    NSString *info = [[notification userInfo] objectForKey:@"info"];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_chatView setText:[_chatView.text stringByAppendingString:info]];
+    });
 }
 /*
 #pragma mark - Navigation

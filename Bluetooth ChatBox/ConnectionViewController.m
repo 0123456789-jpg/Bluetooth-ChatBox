@@ -42,6 +42,9 @@
             _advertiser.delegate = self;
             [_advertiser startAdvertisingPeer];
         }
+        NSString *info = [NSString stringWithFormat:@"%@\nI joined.\nMy name: %@\n\n", [self getCurrentDate ], _peerID.displayName];
+        NSDictionary *dict = @{@"info":info};
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"WriteUserInfo" object:nil userInfo:dict];
     }
     return YES;
 }
@@ -72,6 +75,9 @@
             if ([_arrConnectedDevices count] > 0) {
                 NSInteger indexOfPeer = [_arrConnectedDevices indexOfObject:peerID.displayName];
                 [_arrConnectedDevices removeObjectAtIndex:indexOfPeer];
+                NSString *info = [NSString stringWithFormat:@"%@\nA peer left.\nPeer's name: %@\n\n", [self getCurrentDate], peerID.displayName];
+                NSDictionary *dict = @{@"info":info};
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"WriteUserInfo" object:nil userInfo:dict];
             }
             NSLog(@"Oh no.");
             break;
@@ -82,6 +88,9 @@
         case MCSessionStateConnected:{
             [_arrConnectedDevices addObject:peerID.displayName];
             NSLog(@"That's good.");
+            NSString *info = [NSString stringWithFormat:@"%@\nA peer joined.\nPeer's name: %@\n\n", [self getCurrentDate], peerID.displayName];
+            NSDictionary *dict = @{@"info":info};
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"WriteUserInfo" object:nil userInfo:dict];
             //2022-02-12 22:28:29
         }
     }
@@ -178,6 +187,13 @@
     if (error) {
         NSLog(@"Error: %@\nReason: %@\nSuggestion: %@", error.localizedDescription, error.localizedFailureReason, error.localizedRecoverySuggestion);
     }
+}
+
+-(NSString*)getCurrentDate{
+    NSDateFormatter *date = [[NSDateFormatter alloc] init];
+    [date setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
+    NSString *dateString = [date stringFromDate:[NSDate date]];
+    return dateString;
 }
 /*
 #pragma mark - Navigation
